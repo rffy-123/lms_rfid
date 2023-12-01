@@ -1,0 +1,70 @@
+{% extends "/shared/layout.html" %}
+
+{% block title %}Signin{% endblock %}
+
+{% block head %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="/static/home.css" />
+{% endblock %}
+
+{% block content %}
+    <div class="container d-flex h-75">
+        <div class="row justify-content-center align-self-center welcome">
+            <h4>SIGNIN</h4>
+
+            <div style="width:90%">
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{error}}
+                    </div>
+                {% endif %}
+                <form action="/signin" method="POST">
+                    <div class="form-group">
+                        <label for="exampleInputRFID">RFID</label>
+                        <input type="text" class="form-control" id="rfid" name="rfid" placeholder="Place your I.D in the scanner">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" class="form-control" name="password" id="exampleInputPassword1" placeholder="Password">
+                    </div>
+
+                    <div class="form-group">
+                        <a href="/signup">Join us now!</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Signin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        // Assuming you have a JavaScript function to read RFID from RPi
+        function readRFID() {
+            // Logic to fetch RFID data from RPi
+            // For this example, let's assume you have a WebSocket connection
+            // that sends RFID data whenever it is available
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            socket.on('connect', function () {
+                console.log('Connected to server');
+            });
+
+            socket.on('rfid_data', function (data) {
+                // Handle the received RFID data
+                console.log('Received RFID data from server:', data);
+
+                // Auto-fill RFID field
+                var rfidField = document.getElementById('rfid');
+                if (rfidField) {
+                    rfidField.value = data;
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            readRFID();
+        });
+    </script>
+{% endblock %}
